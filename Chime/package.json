@@ -1,8 +1,8 @@
 {
   "name": "copilot-chime",
   "displayName": "Copilot Chime",
-  "description": "Audio notifications for GitHub Copilot — hear a chime when tasks complete, when Copilot needs your input, or when terminal commands finish. Never miss a prompt again.",
-  "version": "0.1.1",
+  "description": "Audio notifications for GitHub Copilot. Hear a chime when tasks complete, when Copilot needs your input, or when terminal commands finish. Never miss a prompt again.",
+  "version": "0.2.0",
   "publisher": "hatchetsoftwarellc",
   "license": "MIT",
   "repository": {
@@ -10,11 +10,10 @@
     "url": "https://github.com/mikemcculloch/CopilotChime.git"
   },
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
-    "Other",
-    "Chat"
+    "Other"
   ],
   "keywords": [
     "copilot",
@@ -95,8 +94,8 @@
         "copilotChime.volume": {
           "type": "number",
           "default": 0.1,
-          "minimum": 0,
-          "maximum": 1,
+          "minimum": 0.0,
+          "maximum": 1.0,
           "description": "Volume level for chime sounds (0.0 to 1.0)."
         },
         "copilotChime.completeSound": {
@@ -155,38 +154,7 @@
           "description": "Sound to play when Copilot needs user interaction or approval."
         }
       }
-    },
-    "languageModelTools": [
-      {
-        "name": "copilotChime-notify",
-        "displayName": "Chime",
-        "toolReferenceName": "chime",
-        "icon": "$(bell)",
-        "canBeReferencedInPrompt": true,
-        "modelDescription": "Plays a notification chime sound to alert the user. Call this tool when: (1) You have completed a task or series of tasks the user asked you to perform — use type 'complete', (2) You need the user's attention, input, approval, or are asking a question before continuing — use type 'prompt', (3) The user explicitly asks to be notified or chimed — use type 'complete'. The chime plays even when VS Code is not focused, so the user knows to come back. ALWAYS use type 'prompt' when you are asking the user a question, presenting options for them to choose, or waiting for their approval before proceeding.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "complete",
-                "attention",
-                "prompt"
-              ],
-              "description": "The notification type: 'complete' for task completion, 'prompt' when asking a question or needing user input/approval, 'attention' for general alerts."
-            },
-            "message": {
-              "type": "string",
-              "description": "A brief message explaining what happened or what is needed from the user."
-            }
-          },
-          "required": [
-            "type"
-          ]
-        }
-      }
-    ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -195,7 +163,7 @@
     "lint": "eslint src --ext ts"
   },
   "devDependencies": {
-    "@types/vscode": "^1.96.0",
+    "@types/vscode": "^1.90.0",
     "@types/node": "^20.0.0",
     "typescript": "^5.5.0"
   }
