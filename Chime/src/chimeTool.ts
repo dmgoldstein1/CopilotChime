@@ -37,6 +37,8 @@ export class ChimeNotifyTool implements vscode.LanguageModelTool<ChimeToolInput>
         const config = vscode.workspace.getConfiguration('copilotChime');
         const enabled = config.get<boolean>('enabled', true);
 
+        console.log(`[ChimeTool] invoke() — type=${type}, enabled=${enabled}, message=${message ?? '(none)'}`);
+
         if (enabled) {
             if (type === 'prompt') {
                 const onToolPrompt = config.get<boolean>('onToolPrompt', true);

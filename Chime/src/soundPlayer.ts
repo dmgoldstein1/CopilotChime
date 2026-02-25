@@ -6,7 +6,7 @@ import { exec } from 'child_process';
 /**
  * Available sound types for the chime extension.
  */
-export type SoundType = 'chime' | 'bell' | 'ping' | 'success' | 'alert' | 'prompt';
+export type SoundType = 'chime' | 'bell' | 'ping' | 'success' | 'alert' | 'prompt' | 'aybabtu';
 
 interface ToneConfig {
     frequency: number;
@@ -25,9 +25,13 @@ export class SoundPlayer {
     private readonly soundCache = new Map<string, string>();
     private readonly soundDir: string;
     private isPlaying = false;
+    private readonly log: (msg: string) => void;
 
-    constructor(storagePath: string) {
+    constructor(storagePath: string, outputChannel?: { appendLine(msg: string): void }) {
         this.soundDir = path.join(storagePath, 'sounds');
+        this.log = outputChannel
+            ? (msg) => outputChannel.appendLine(`[SoundPlayer] ${msg}`)
+            : (msg) => console.log(`[SoundPlayer] ${msg}`);
     }
 
     /**
@@ -36,7 +40,9 @@ export class SoundPlayer {
      * Concurrent play requests are dropped (no overlapping sounds).
      */
     async play(soundType: SoundType, volume: number = 0.5): Promise<void> {
+        this.log(`play() called — type=${soundType}, volume=${volume}, isPlaying=${this.isPlaying}`);
         if (this.isPlaying) {
+            this.log('play() skipped — already playing');
             return; // Don't overlap sounds
         }
 
@@ -46,11 +52,16 @@ export class SoundPlayer {
             let filePath = this.soundCache.get(cacheKey);
 
             if (!filePath || !fs.existsSync(filePath)) {
+                this.log(`generating WAV for cacheKey=${cacheKey}`);
                 filePath = this.generateSound(soundType, volume);
                 this.soundCache.set(cacheKey, filePath);
             }
 
+            this.log(`playing file: ${filePath}`);
             await this.playFile(filePath);
+            this.log('playFile() resolved');
+        } catch (err) {
+            this.log(`play() error: ${err}`);
         } finally {
             this.isPlaying = false;
         }
@@ -250,6 +261,56 @@ export class SoundPlayer {
                     },
                 ];
 
+            // "All Your Base Are Belong To Us" — dramatic minor arpeggio
+            // D4 → F4 → A4 → D5 with heavy retro-synth harmonics
+            case 'aybabtu':
+                return [
+                    {
+                        frequency: 294,
+                        duration: 0.14,
+                        fadeIn: 0.005,
+                        fadeOut: 0.06,
+                        harmonics: [
+                            { ratio: 2, amplitude: 0.35 },
+                            { ratio: 3, amplitude: 0.20 },
+                            { ratio: 4, amplitude: 0.10 },
+                        ],
+                    },
+                    {
+                        frequency: 349,
+                        duration: 0.14,
+                        fadeIn: 0.005,
+                        fadeOut: 0.06,
+                        harmonics: [
+                            { ratio: 2, amplitude: 0.35 },
+                            { ratio: 3, amplitude: 0.20 },
+                            { ratio: 4, amplitude: 0.10 },
+                        ],
+                    },
+                    {
+                        frequency: 440,
+                        duration: 0.14,
+                        fadeIn: 0.005,
+                        fadeOut: 0.06,
+                        harmonics: [
+                            { ratio: 2, amplitude: 0.35 },
+                            { ratio: 3, amplitude: 0.20 },
+                            { ratio: 4, amplitude: 0.10 },
+                        ],
+                    },
+                    {
+                        frequency: 587,
+                        duration: 0.30,
+                        fadeIn: 0.005,
+                        fadeOut: 0.25,
+                        harmonics: [
+                            { ratio: 2, amplitude: 0.35 },
+                            { ratio: 3, amplitude: 0.20 },
+                            { ratio: 4, amplitude: 0.10 },
+                        ],
+                    },
+                ];
+
             default:
                 return [
                     { frequency: 880, duration: 0.18, fadeIn: 0.008, fadeOut: 0.14 },
@@ -303,9 +364,13 @@ export class SoundPlayer {
                     return;
             }
 
+            this.log(`exec command: ${command}`);
             exec(command, { timeout: 10000 }, (error) => {
                 if (error) {
+                    this.log(`playFile exec error: ${error.message}`);
                     console.warn(`Copilot Chime: sound playback failed — ${error.message}`);
+                } else {
+                    this.log('playFile exec completed successfully');
                 }
                 resolve(); // Always resolve; don't break the extension if audio fails
             });

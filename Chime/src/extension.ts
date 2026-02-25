@@ -5,8 +5,10 @@ import { ChimeNotifyTool } from './chimeTool';
 
 export function activate(context: vscode.ExtensionContext): void {
     const storagePath = context.globalStorageUri.fsPath;
-    const soundPlayer = new SoundPlayer(storagePath);
-    const eventMonitor = new EventMonitor(soundPlayer);
+    const outputChannel = vscode.window.createOutputChannel('Copilot Chime');
+    outputChannel.appendLine(`[activate] storagePath=${storagePath}`);
+    const soundPlayer = new SoundPlayer(storagePath, outputChannel);
+    const eventMonitor = new EventMonitor(soundPlayer, outputChannel);
 
     // ── Language Model Tool ──────────────────────────────────
     // Copilot (and other LM participants) can call this tool to
@@ -38,6 +40,7 @@ export function activate(context: vscode.ExtensionContext): void {
     // ── Cleanup ──────────────────────────────────────────────
     context.subscriptions.push(eventMonitor);
     context.subscriptions.push({ dispose: () => soundPlayer.dispose() });
+    context.subscriptions.push(outputChannel);
 }
 
 export function deactivate(): void {

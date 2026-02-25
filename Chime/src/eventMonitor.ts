@@ -14,11 +14,15 @@ export class EventMonitor implements vscode.Disposable {
     private readonly disposables: vscode.Disposable[] = [];
     private readonly soundPlayer: SoundPlayer;
     private readonly statusBarItem: vscode.StatusBarItem;
+    private readonly log: (msg: string) => void;
 
     private terminalDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
-    constructor(soundPlayer: SoundPlayer) {
+    constructor(soundPlayer: SoundPlayer, outputChannel?: { appendLine(msg: string): void }) {
         this.soundPlayer = soundPlayer;
+        this.log = outputChannel
+            ? (msg) => outputChannel.appendLine(`[EventMonitor] ${msg}`)
+            : (msg) => console.log(`[EventMonitor] ${msg}`);
 
         // Status bar toggle button
         this.statusBarItem = vscode.window.createStatusBarItem(
@@ -45,16 +49,19 @@ export class EventMonitor implements vscode.Disposable {
     // ── Public API (called by commands & chimeTool) ───────────────
 
     async playComplete(): Promise<void> {
+        this.log('playComplete()');
         const cfg = this.cfg();
         await this.soundPlayer.play(cfg.completeSound, cfg.volume);
     }
 
     async playAttention(): Promise<void> {
+        this.log('playAttention()');
         const cfg = this.cfg();
         await this.soundPlayer.play(cfg.attentionSound, cfg.volume);
     }
 
     async playPrompt(): Promise<void> {
+        this.log('playPrompt()');
         const cfg = this.cfg();
         await this.soundPlayer.play(cfg.promptSound, cfg.volume);
     }
@@ -176,7 +183,7 @@ export class EventMonitor implements vscode.Disposable {
         const settingKey = settingKeys[type];
         const current = config.get<SoundType>(settingKey, defaults[type]);
 
-        const allSounds: SoundType[] = ['chime', 'bell', 'ping', 'success', 'alert', 'prompt'];
+        const allSounds: SoundType[] = ['chime', 'bell', 'ping', 'success', 'alert', 'prompt', 'aybabtu'];
 
         const soundDescriptions: Record<string, string> = {
             chime: 'Pleasant ascending three-note arpeggio',
@@ -185,6 +192,7 @@ export class EventMonitor implements vscode.Disposable {
             success: 'Cheerful ascending major triad',
             alert: 'Two-tone alternating alert',
             prompt: 'Gentle rising two-note nudge',
+            aybabtu: 'All Your Base — dramatic minor arpeggio',
         };
 
         const items = allSounds.map((s) => ({
@@ -273,8 +281,10 @@ export class EventMonitor implements vscode.Disposable {
                         clearTimeout(this.terminalDebounceTimer);
                     }
 
+                    this.log(`terminal debounce started (${cfg.terminalDebounceMs}ms)`);
                     this.terminalDebounceTimer = setTimeout(async () => {
                         this.terminalDebounceTimer = undefined;
+                        this.log('terminal debounce fired — playing chime');
                         await this.soundPlayer.play(cfg.completeSound, cfg.volume);
                     }, cfg.terminalDebounceMs);
                 }),

@@ -2,7 +2,7 @@
   "name": "copilot-chime",
   "displayName": "Copilot Chime",
   "description": "Audio notifications for GitHub Copilot. Hear a chime when tasks complete, when Copilot needs your input, or when terminal commands finish. Never miss a prompt again.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "hatchetsoftwarellc",
   "license": "MIT",
   "repository": {
@@ -141,13 +141,15 @@
             "chime",
             "bell",
             "ping",
-            "success"
+            "success",
+            "aybabtu"
           ],
           "enumDescriptions": [
             "Pleasant ascending three-note chime",
             "Rich bell tone with harmonics",
             "Short, clean single-note ping",
-            "Cheerful ascending major triad"
+            "Cheerful ascending major triad",
+            "All Your Base — dramatic minor arpeggio"
           ],
           "default": "chime",
           "description": "Sound to play on task completion."
@@ -159,14 +161,16 @@
             "bell",
             "ping",
             "alert",
-            "prompt"
+            "prompt",
+            "aybabtu"
           ],
           "enumDescriptions": [
             "Pleasant ascending three-note chime",
             "Rich bell tone with harmonics",
             "Short, clean single-note ping",
             "Two-tone alternating alert",
-            "Gentle rising two-note nudge"
+            "Gentle rising two-note nudge",
+            "All Your Base — dramatic minor arpeggio"
           ],
           "default": "bell",
           "description": "Sound to play when user attention is needed."
@@ -178,14 +182,16 @@
             "chime",
             "bell",
             "ping",
-            "alert"
+            "alert",
+            "aybabtu"
           ],
           "enumDescriptions": [
             "Gentle rising two-note nudge (default)",
             "Pleasant ascending three-note chime",
             "Rich bell tone with harmonics",
             "Short, clean single-note ping",
-            "Two-tone alternating alert"
+            "Two-tone alternating alert",
+            "All Your Base — dramatic minor arpeggio"
           ],
           "default": "prompt",
           "description": "Sound to play when Copilot needs user interaction or approval."
