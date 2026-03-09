@@ -5,3 +5,4 @@
 mcp-readme.md
 !my-*.md
 !local-*.md
+/Chime/eslint-results.sarif
